@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:getx_intro/value_controller.dart';
+import 'package:getx_intro/user_controller.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -17,17 +16,23 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(),
+      home: HomePage(),
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  MyHomePage({super.key});
+class HomePage extends StatelessWidget {
+  HomePage({Key? key}) : super(key: key);
 
-  final textController = TextEditingController();
+  final nameController = TextEditingController();
+  final ageController = TextEditingController();
 
-  final valueController = ValueController();
+  TextStyle commonStyle() => const TextStyle(
+        fontSize: 17,
+        fontWeight: FontWeight.w500,
+      );
+
+  final userController = UserController();
 
   @override
   Widget build(BuildContext context) {
@@ -36,34 +41,74 @@ class MyHomePage extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            //VALOR
-            Obx(
-              () {
-                return Text('Valor definido: ${valueController.definedValue}');
-              },
+            Obx(() => Text(
+                  'Nome: ${userController.user.value.name}',
+                  style: commonStyle(),
+                )),
+            Obx(() => Text(
+                  'idade: ${userController.user.value.age}',
+                  style: commonStyle(),
+                )),
+
+            const Divider(
+              thickness: 1.5,
+              color: Colors.blue,
+              height: 20,
             ),
 
-            //CAMPO
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 32),
-              child: TextField(
-                controller: textController,
-              ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                // Campo de nome
+                Expanded(
+                  child: TextField(
+                    controller: nameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Nome',
+                    ),
+                  ),
+                ),
+
+                // Botão para salvar o nome
+                ElevatedButton(
+                  onPressed: () {
+                    userController.setUserName(nameController.text);
+                  },
+                  child: const Text('Salvar'),
+                ),
+              ],
             ),
 
-            //BOTÃO
-            Obx(() {
-              return valueController.isLoading.value
-                  ? const CircularProgressIndicator()
-                  : ElevatedButton(
-                      onPressed: () {
-                        String value = textController.text;
-                        valueController.setValue(value);
-                      },
-                      child: const Text("Confirmar"),
-                    );
-            }),
+            // Espaçamento
+            const SizedBox(height: 10),
+
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                // Campo de idade
+                Expanded(
+                  child: TextField(
+                    controller: ageController,
+                    decoration: const InputDecoration(
+                      labelText: 'Idade',
+                    ),
+                  ),
+                ),
+
+                // Botão para salvar a idade
+                ElevatedButton(
+                  onPressed: () {
+                    userController.setUserAge(int.parse(ageController.text));
+                  },
+                  child: const Text('Salvar'),
+                ),
+              ],
+            ),
+
+            // Espaçamento
+            const SizedBox(height: 10),
           ],
         ),
       ),
